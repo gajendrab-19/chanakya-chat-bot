@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chanakya Bot – Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--maroon:#7B1C1C;--gold:#C8972A;--cream:#FBF6EE;--muted:#7A6652;--border:rgba(123,28,28,0.15);--sans:'DM Sans',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:#f4f4f0;color:#1a1008;min-height:100vh}
+header{background:var(--maroon);color:#fff;padding:16px 28px;display:flex;align-items:center;gap:12px}
+header h1{font-size:18px;font-weight:500}
+header span{opacity:.65;font-size:12px;margin-left:auto}
+.wrap{max-width:1100px;margin:28px auto;padding:0 20px;display:grid;gap:18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px}
+.card .label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.card .val{font-size:26px;font-weight:500;color:var(--maroon)}
+.card .sub{font-size:11px;color:var(--muted);margin-top:3px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.dot.ok{background:#22c55e}.dot.bad{background:#ef4444}
+.panel{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.panel-head{padding:13px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.log-row{padding:10px 18px;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px;display:grid;grid-template-columns:130px 100px 1fr;gap:10px;align-items:start}
+.log-row:last-child{border:none}
+.log-row .ts{color:var(--muted);font-size:11px}
+.log-row .ev{background:rgba(123,28,28,0.07);color:var(--maroon);border-radius:4px;padding:2px 7px;font-size:11px;font-weight:500;width:fit-content}
+.btn{background:var(--maroon);color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:13px;cursor:pointer;transition:background .15s;font-family:var(--sans)}
+.btn:hover{background:#9B2424}
+.btn.outline{background:transparent;color:var(--maroon);border:1.5px solid var(--maroon)}
+.btn.outline:hover{background:var(--maroon);color:#fff}
+.actions{display:flex;gap:10px;padding:14px 18px}
+#status-text{font-size:12px;color:var(--muted);padding:4px 0}
+code{background:#f4f4f0;padding:3px 8px;border-radius:4px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+  </svg>
+  <h1>Chanakya Bot — Admin Dashboard</h1>
+  <span id="last-refresh">Loading…</span>
+</header>
+
+<div class="wrap">
+  <div class="cards">
+    <div class="card">
+      <div class="label">Backend</div>
+      <div class="val" id="be-status">–</div>
+      <div class="sub" id="be-model">–</div>
+    </div>
+    <div class="card">
+      <div class="label">LLM Provider</div>
+      <div class="val" id="provider">–</div>
+      <div class="sub">Groq Cloud API</div>
+    </div>
+    <div class="card">
+      <div class="label">Total Chats</div>
+      <div class="val" id="total-chats">–</div>
+      <div class="sub">this session</div>
+    </div>
+    <div class="card">
+      <div class="label">Cached Pages</div>
+      <div class="val" id="cache-keys">–</div>
+      <div class="sub">scraped pages</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">⚙️ Quick Actions</div>
+    <div class="actions">
+      <button class="btn" onclick="checkHealth()">🔄 Refresh Status</button>
+    </div>
+    <div style="padding:0 18px 14px">
+      <div id="status-text"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">📋 Setup Instructions</div>
+    <div style="padding:16px 18px;font-size:13px;line-height:1.9;color:#2E1A0E">
+      <strong>Step 1 – Get a free Groq API key</strong><br>
+      Sign up at <a href="https://console.groq.com" target="_blank">console.groq.com</a> and create a key.<br><br>
+
+      <strong>Step 2 – Configure your .env file</strong><br>
+      <code>cd backend && cp .env.example .env</code><br>
+      Paste your Groq key into .env as <code>GROQ_API_KEY=gsk_...</code><br><br>
+
+      <strong>Step 3 – Install dependencies</strong><br>
+      <code>pip3 install -r backend/requirements.txt</code><br><br>
+
+      <strong>Step 4 – Start the backend</strong><br>
+      <code>cd backend && uvicorn server:app --host 127.0.0.1 --port 8000 --reload</code><br><br>
+
+      <strong>Step 5 – Open the chatbot</strong><br>
+      Open <code>frontend/index.html</code> in any browser.
+    </div>
+  </div>
+</div>
+
+<script>
+
+const ADMIN_API = "http://127.0.0.1:8001";
+
+// Store credentials in memory only
+let adminUser = "";
+let adminPass = "";
+
+async function checkHealth() {
+  document.getElementById('status-text').textContent = 'Checking…';
+
+  try {
+    // Ask credentials only once
+    if (!adminUser || !adminPass) {
+      adminUser = prompt("Enter Admin Username:");
+      adminPass = prompt("Enter Admin Password:");
+
+      if (!adminUser || !adminPass) {
+        document.getElementById('status-text').textContent =
+          '❌ Login cancelled';
+        return;
+      }
+    }
+
+    const r = await fetch(`${ADMIN_API}/api/stats`, {
+      signal: AbortSignal.timeout(5000),
+      headers: {
+        "Authorization": "Basic " + btoa(`${adminUser}:${adminPass}`)
+      }
+    });
+
+    // Wrong credentials
+    if (r.status === 401) {
+      document.getElementById('status-text').textContent =
+        '🔒 Unauthorized — invalid admin credentials';
+
+      // Reset credentials so prompt appears again
+      adminUser = "";
+      adminPass = "";
+      return;
+    }
+
+    const d = await r.json();
+    const h = d.health || {};
+
+    // Backend status
+    document.getElementById('be-status').innerHTML =
+      h.status === 'ok'
+        ? '<span class="dot ok"></span>Online'
+        : '<span class="dot bad"></span>Offline';
+
+    // Model/provider info
+    document.getElementById('be-model').textContent =
+      h.model || '–';
+
+    document.getElementById('provider').textContent =
+      h.provider || 'Groq';
+
+    // Stats
+    document.getElementById('total-chats').textContent =
+      d.total_chats ?? '–';
+
+    document.getElementById('cache-keys').textContent =
+      d.cache_keys ?? '–';
+
+    // Status text
+    document.getElementById('status-text').textContent =
+      '✅ Status refreshed successfully';
+
+    document.getElementById('last-refresh').textContent =
+      'Refreshed ' + new Date().toLocaleTimeString();
+
+  } catch (e) {
+    console.error(e);
+
+    document.getElementById('be-status').innerHTML =
+      '<span class="dot bad"></span>Offline';
+
+    document.getElementById('status-text').textContent =
+      '❌ Cannot reach admin server. Ensure port 8001 is running.';
+  }
+}
+
+// Initial load
+checkHealth();
+
+// Auto refresh every 30 sec
+setInterval(checkHealth, 30000);
+</script>
+</body>
+</html>

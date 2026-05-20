@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- [SECURITY] Content-Security-Policy: restricts what can run in this page -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+               script-src 'unsafe-inline';
+               style-src 'unsafe-inline' https://fonts.googleapis.com;
+               font-src https://fonts.gstatic.com;
+               connect-src http://127.0.0.1:8000 http://localhost:8000;
+               img-src 'self' data:;">
+<title>Chanakya University – Admissions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--maroon:#7B1C1C;--maroon-d:#5E1515;--gold:#C8972A;--gold-l:#E8B84B;--cream:#FBF6EE;--cream-d:#F2EAD8;--text:#2E1A0E;--muted:#7A6652;--border:rgba(123,28,28,0.15);--serif:'Cormorant Garamond',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--cream);color:var(--text);min-height:100vh}
+.page-nav{background:var(--maroon);padding:0 40px;height:60px;display:flex;align-items:center;gap:24px;box-shadow:0 2px 16px rgba(0,0,0,0.3)}
+.nav-logo{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--gold-l);letter-spacing:0.04em;white-space:nowrap}
+.nav-logo em{color:rgba(255,255,255,0.8);font-style:normal;font-weight:400}
+.nav-links{display:flex;gap:28px;margin-left:auto}
+.nav-links a{color:rgba(255,255,255,0.78);text-decoration:none;font-size:13px;transition:color .15s}
+.nav-links a:hover{color:var(--gold-l)}
+.page-hero{background:linear-gradient(160deg,#fff 40%,var(--cream-d) 100%);padding:80px 40px 100px;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 65% 35%,rgba(200,151,42,0.10) 0%,transparent 60%);pointer-events:none}
+.hero-tag{display:inline-block;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);background:rgba(200,151,42,0.1);border:1px solid rgba(200,151,42,0.3);padding:5px 14px;border-radius:20px;margin-bottom:20px}
+.page-hero h1{font-family:var(--serif);font-size:54px;font-weight:600;color:var(--maroon);line-height:1.15;max-width:660px;margin:0 auto 18px;position:relative}
+.page-hero p{font-size:16px;color:var(--muted);max-width:500px;margin:0 auto 36px;line-height:1.7}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--maroon);color:#fff;padding:13px 28px;border-radius:6px;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:background .15s,transform .1s}
+.btn-primary:hover{background:var(--maroon-d);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--maroon);padding:12px 26px;border-radius:6px;font-size:14px;font-weight:500;text-decoration:none;border:1.5px solid var(--maroon);cursor:pointer;transition:all .15s}
+.btn-outline:hover{background:var(--maroon);color:#fff}
+#bubble{position:fixed;bottom:28px;right:28px;width:62px;height:62px;border-radius:50%;background:var(--maroon);border:3px solid var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:9999;box-shadow:0 6px 28px rgba(123,28,28,0.5);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .2s}
+#bubble:hover{transform:scale(1.1)}
+#bubble .ico{position:absolute;transition:opacity .2s,transform .2s}
+#bubble .ico-close{opacity:0;transform:rotate(-90deg) scale(0.5)}
+#bubble.open .ico-chat{opacity:0;transform:rotate(90deg) scale(0.5)}
+#bubble.open .ico-close{opacity:1;transform:rotate(0deg) scale(1)}
+.notif{position:absolute;top:-3px;right:-3px;width:20px;height:20px;background:var(--gold);border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#1A1008;animation:pop 2s ease-in-out infinite}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+#chat{position:fixed;bottom:106px;right:28px;width:390px;height:570px;border-radius:18px;background:#fff;border:1px solid var(--border);box-shadow:0 16px 64px rgba(26,16,8,0.22);display:flex;flex-direction:column;overflow:hidden;z-index:9998;transform-origin:bottom right;transform:scale(0.65) translateY(16px);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.45,.64,1),opacity .22s}
+#chat.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+.ch{background:var(--maroon);padding:14px 16px;display:flex;align-items:center;gap:11px;flex-shrink:0}
+.av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold) 0%,#D4A030 100%);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:18px;font-weight:700;color:var(--maroon);flex-shrink:0;border:2px solid rgba(255,255,255,0.25)}
+.agent-name{font-family:var(--serif);font-size:17px;font-weight:600;color:#fff;line-height:1.2}
+.agent-sub{font-size:11px;color:rgba(255,255,255,0.65);margin-top:1px}
+.online{width:8px;height:8px;background:#4ADE80;border-radius:50%;margin-left:auto;flex-shrink:0;position:relative}
+.online::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:rgba(74,222,128,0.3);animation:ring 2s infinite}
+@keyframes ring{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0;transform:scale(2)}}
+#sbar{font-size:11px;padding:5px 14px;text-align:center;flex-shrink:0;display:none}
+#sbar.show{display:block}
+#sbar.ok{background:#D1FAE5;color:#065F46}
+#sbar.err{background:#FEE2E2;color:#991B1B}
+#sbar.warn{background:#FEF3C7;color:#92400E}
+.chips{padding:9px 12px 8px;display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;flex-shrink:0;background:var(--cream);border-bottom:1px solid rgba(123,28,28,0.08);scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{background:#fff;border:1px solid var(--border);color:var(--maroon);padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--sans);flex-shrink:0}
+.chip:hover{background:var(--maroon);color:#fff;border-color:var(--maroon)}
+.msgs{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.msg{display:flex;gap:8px;max-width:86%;animation:fin .22s ease both}
+@keyframes fin{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.mav{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#D4A030);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:12px;font-weight:700;color:var(--maroon);flex-shrink:0;margin-top:2px}
+.mb{padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.6}
+.msg.bot .mb{background:#F7F1E8;border:1px solid rgba(123,28,28,0.09);border-bottom-left-radius:3px;color:var(--text)}
+.msg.user .mb{background:var(--maroon);color:#fff;border-bottom-right-radius:3px}
+.mt{font-size:10px;color:var(--muted);margin-top:3px;opacity:0.65}
+.src{display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-size:10px;color:var(--muted);background:rgba(123,28,28,0.05);padding:3px 8px;border-radius:10px}
+.dots{display:flex;gap:4px;align-items:center;padding:4px 2px}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:dot 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-6px);opacity:1}}
+.wcard{background:linear-gradient(135deg,var(--maroon) 0%,#9B2424 100%);border-radius:12px;padding:14px 15px;color:#fff;margin-bottom:2px}
+.wcard h3{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--gold-l);margin-bottom:5px}
+.wcard p{font-size:12.5px;line-height:1.55;opacity:.88}
+.ibar{padding:11px 12px;background:#fff;border-top:1px solid rgba(123,28,28,0.1);display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
+#inp{flex:1;border:1.5px solid rgba(123,28,28,0.2);border-radius:22px;padding:9px 16px;font-size:13.5px;font-family:var(--sans);color:var(--text);background:var(--cream);outline:none;resize:none;min-height:40px;max-height:100px;line-height:1.5;transition:border-color .15s,background .15s}
+#inp:focus{border-color:var(--maroon);background:#fff}
+#inp::placeholder{color:var(--muted)}
+#sbtn{width:40px;height:40px;border-radius:50%;background:var(--maroon);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,transform .1s}
+#sbtn:hover{background:var(--maroon-d);transform:scale(1.06)}
+#sbtn:disabled{background:#ccc;cursor:not-allowed;transform:none}
+.footer-tag{text-align:center;font-size:10px;color:var(--muted);padding:4px 0 9px;opacity:.65}
+@media(max-width:460px){#chat{width:calc(100vw - 20px);right:10px;bottom:90px;height:72vh}#bubble{right:14px;bottom:14px}.page-hero h1{font-size:36px}.page-nav .nav-links{display:none}}
+</style>
+</head>
+<body>
+
+<nav class="page-nav">
+  <div class="nav-logo">Chanakya <em>University</em></div>
+  <div class="nav-links">
+    <a href="#">About</a><a href="#">Admissions</a><a href="#">Programmes</a>
+    <a href="#">Research</a><a href="#">Campus</a><a href="#">Contact</a>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="hero-tag">Admissions 2026–27 Now Open</div>
+  <h1>Learning through Experience for a Life of Excellence</h1>
+  <p>A multidisciplinary university inspired by India's civilizational wisdom. Located at KIADB Aerospace Park, Bangalore.</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="openChat()">💬 Ask Sonali — Admission Assistant</button>
+    <a class="btn-outline" href="https://admissions.chanakyauniversity.in/ug-application" target="_blank" rel="noopener noreferrer">Apply Now</a>
+  </div>
+</section>
+
+<button id="bubble" onclick="toggle()" aria-label="Open chat with Sonali">
+  <div class="notif" id="notif">1</div>
+  <svg class="ico ico-chat" width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+  </svg>
+  <svg class="ico ico-close" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+  </svg>
+</button>
+
+<div id="chat" role="dialog" aria-label="Sonali — Admission Assistant">
+  <div class="ch">
+    <div class="av" aria-hidden="true">S</div>
+    <div class="agent">
+      <div class="agent-name">Sonali</div>
+      <div class="agent-sub">Admission Assistant · Chanakya University</div>
+    </div>
+    <div class="online" title="Online" aria-label="Online"></div>
+  </div>
+  <div id="sbar" role="status" aria-live="polite"></div>
+  <div class="chips" id="chips" aria-label="Quick questions">
+    <button class="chip" onclick="send('What are the BTech fees?')">BTech fees?</button>
+    <button class="chip" onclick="send('How do I apply?')">How to apply?</button>
+    <button class="chip" onclick="send('What scholarships are available?')">Scholarships?</button>
+    <button class="chip" onclick="send('Tell me about MBA')">MBA?</button>
+    <button class="chip" onclick="send('What is CUPP exam?')">CUPP exam?</button>
+    <button class="chip" onclick="send('Is hostel available?')">Hostel?</button>
+  </div>
+  <div class="msgs" id="msgs" aria-live="polite">
+    <div class="wcard">
+      <h3>👋 Hi, I'm Sonali!</h3>
+      <p>Your personal guide to Chanakya University admissions. Ask me about courses, fees, scholarships, CUPP exam, or anything about applying!</p>
+    </div>
+  </div>
+  <div class="ibar">
+    <textarea id="inp" placeholder="Ask about fees, courses, scholarships…" rows="1"
+              onkeydown="onKey(event)" oninput="resize(this)"
+              maxlength="500" aria-label="Your message"></textarea>
+    <button id="sbtn" onclick="send()" aria-label="Send message">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7"/>
+      </svg>
+    </button>
+  </div>
+  <div class="footer-tag">Powered by Chanakya AI · Live from chanakyauniversity.edu.in</div>
+</div>
+
+<script>
+// [SECURITY] Only these two localhost origins are in ALLOWED_ORIGINS on the backend.
+// Change both here and in backend/.env when deploying to production.
+const URLS = ["http://127.0.0.1:8000", "http://localhost:8000"];
+// [SECURITY] Max message length matches server-side Pydantic validation (500 chars)
+const MAX_MSG = 500;
+
+let API = null, hist = [], busy = false;
+
+function bar(msg, type) {
+  const b = document.getElementById('sbar');
+  b.textContent = msg; // textContent — no XSS possible
+  b.className = 'show ' + type;
+  if (type === 'ok') setTimeout(() => b.className = '', 3000);
+}
+
+async function init() {
+  bar('Connecting to Sonali AI…', 'warn');
+  for (const url of URLS) {
+    try {
+      const r = await fetch(url + '/health', { signal: AbortSignal.timeout(3000) });
+      if (r.ok) { API = url; bar('✅ Sonali is online!', 'ok'); return; }
+    } catch(e) { /* try next */ }
+  }
+  bar('❌ Backend offline — run: cd backend && uvicorn server:app --host 127.0.0.1 --port 8000', 'err');
+}
+
+function toggle() {
+  document.getElementById('chat').classList.toggle('open');
+  document.getElementById('bubble').classList.toggle('open');
+  document.getElementById('notif').style.display = 'none';
+  document.getElementById('inp').focus();
+}
+function openChat() {
+  document.getElementById('chat').classList.add('open');
+  document.getElementById('bubble').classList.add('open');
+  document.getElementById('notif').style.display = 'none';
+  document.getElementById('inp').focus();
+}
+
+function now() { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+
+// [SECURITY] HTML-escape any text before inserting into innerHTML
+function esc(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// [SECURITY] Validate source URL is on the CU domain before rendering as link
+function safeSrc(src) {
+  try {
+    const u = new URL(src);
+    return u.hostname.endsWith('chanakyauniversity.edu.in') ? src : null;
+  } catch { return null; }
+}
+
+function scroll() { const m = document.getElementById('msgs'); m.scrollTop = m.scrollHeight; }
+function resize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
+
+function addMsg(role, text) {
+  const m = document.createElement('div');
+  m.className = 'msg ' + role;
+  if (role === 'bot') {
+    m.innerHTML = `<div class="mav" aria-hidden="true">S</div><div><div class="mb"></div><div class="mt">${esc(now())}</div></div>`;
+    m.querySelector('.mb').textContent = text; // textContent — safe, no XSS
+  } else {
+    m.innerHTML = `<div><div class="mb"></div><div class="mt">${esc(now())}</div></div>`;
+    m.querySelector('.mb').textContent = text; // textContent — safe
+  }
+  document.getElementById('msgs').appendChild(m);
+  scroll();
+  return m;
+}
+
+function showTyping() {
+  const d = document.createElement('div');
+  d.id = 'typ'; d.className = 'msg bot';
+  d.innerHTML = `<div class="mav" aria-hidden="true">S</div><div><div class="mb"><div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  document.getElementById('msgs').appendChild(d);
+  scroll();
+}
+function hideTyping() { document.getElementById('typ')?.remove(); }
+
+async function send(override) {
+  if (busy) return;
+  if (!API) { await init(); if (!API) return; }
+
+  const inp  = document.getElementById('inp');
+  // [SECURITY] Enforce client-side length limit (server also validates)
+  const raw  = override || inp.value.trim();
+  const text = raw.slice(0, MAX_MSG);
+  if (!text) return;
+
+  inp.value = ''; inp.style.height = 'auto';
+  addMsg('user', text);
+  hist.push({ role: 'user', content: text });
+  busy = true; document.getElementById('sbtn').disabled = true;
+  showTyping();
+
+  try {
+    const resp = await fetch(API + '/chat', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // [SECURITY] Only send last 6 turns (backend also caps at 4 + validates roles)
+      body: JSON.stringify({ message: text, history: hist.slice(-6) }),
+    });
+
+    if (resp.status === 429) {
+      hideTyping();
+      addMsg('bot', 'You\'re sending messages too quickly. Please wait a moment.');
+      bar('Rate limited — please slow down', 'warn');
+      busy = false; document.getElementById('sbtn').disabled = false;
+      return;
+    }
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+    hideTyping();
+    const div  = addMsg('bot', '');
+    const bub  = div.querySelector('.mb');
+    const msgs = document.getElementById('msgs');
+    let full = '';
+
+    const reader = resp.body.getReader(), dec = new TextDecoder();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      for (const line of dec.decode(value).split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const d = JSON.parse(line.slice(6));
+          if (d.token) {
+            full += d.token;
+            bub.textContent = full; // [SECURITY] textContent — no XSS from LLM output
+            msgs.scrollTop  = msgs.scrollHeight;
+          }
+          if (d.done && d.source) {
+            // [SECURITY] Validate source URL is on CU domain before rendering
+            const safe = safeSrc(d.source);
+            if (safe) {
+              const s = document.createElement('div');
+              s.className = 'src';
+              const link = document.createElement('a');
+              link.href   = safe;
+              link.target = '_blank';
+              link.rel    = 'noopener noreferrer'; // [SECURITY] prevents tab-napping
+              link.textContent = '🔗 Source: chanakyauniversity.edu.in';
+              s.appendChild(link);
+              bub.parentNode.insertBefore(s, bub.nextSibling);
+            }
+          }
+        } catch(e) { /* malformed chunk — skip */ }
+      }
+    }
+    hist.push({ role: 'assistant', content: full });
+
+  } catch(e) {
+    hideTyping();
+    addMsg('bot', 'Sorry, connection error. Please check the backend terminal is still running.');
+    bar('Connection error — is uvicorn still running?', 'err');
+  }
+
+  busy = false;
+  document.getElementById('sbtn').disabled = false;
+  document.getElementById('inp').focus();
+}
+
+function onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
+
+init();
+</script>
+</body>
+</html>
