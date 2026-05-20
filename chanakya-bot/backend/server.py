@@ -84,8 +84,8 @@ app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,   # [FIX 2]
-    allow_methods=["POST", "GET"],
-    allow_headers=["Content-Type"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.exception_handler(RateLimitExceeded)
