@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: chanakya-backend
+    env: python
+    rootDir: chanakya-bot/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
